@@ -1,0 +1,151 @@
+After you login to your Ubuntu server via SSH, you need to follow these steps !
+
+ Create a directory to place your newly developed application using the following command :
+
+ mkdir myaddons
+
+Add this directory to your odoo configuration file (odoo.conf) so that the odoo server can detect all the applications within this directory.
+
+sudo subl /etc/odoo/odoo.conf
+
+
+Edit the addons_path variable by adding the full path of the new directory preceded by a comma ( , ) as shown below:
+
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+
+The odoo.conf file would look like this:
+
+[options]
+; This is the password that allows database operations:
+; admin_passwd = admin
+db_host = False
+db_port = False
+db_user = odoo
+db_password = False
+addons_path = /usr/lib/python3/dist-packages/odoo/addons,/home/halcyoona/myaddons
+
+Create the skeleton for your new Application using the command below ! I am calling this application: myconferences
+odoo scaffold myconferences
+
+To view the content of the directory created for you, use the following command
+ls -1
+
+You would find the following files being automatically created:
+
+
+Open the __manifest__.py file to write down the description of your application as well include any required XML data files that we would be creating later in this tutorial. My __manifest__.py is shown below:
+
+# -*- coding: utf-8 -*-
+{
+    'name': "myconferences",
+
+    'summary': """
+        Short (1 phrase/line) summary of the module's purpose, used as
+        subtitle on modules listing or apps.openerp.com""",
+
+    'description': """
+        Long description of module's purpose
+    """,
+
+    'author': "Halcyoona",
+    'website': "http://www.halcyoona.com",
+
+    # Categories can be used to filter modules in modules listing
+    # Check https://github.com/odoo/odoo/blob/11.0/odoo/addons/base/module/module_data.xml
+    # for the full list
+    'category': 'Uncategorized',
+    'version': '0.1',
+
+    # any module necessary for this one to work correctly
+    'depends': ['base'],
+
+    # always loaded
+    'data': [
+        'views/mymenu.xml',
+        'views/views.xml',
+        'views/templates.xml',
+    ],
+    'application': True,
+    # only loaded in demonstration mode
+    'demo': [
+        'demo/demo.xml',
+    ],
+}
+
+
+    Create a data class Model ! It is a basic class which somehow describes the fields for database table ! Two important attributes that you need to create are:
+
+
+
+Create a simple python file called : conf.py inside the main directory and copy the following content inside.
+
+
+    #  -*-  coding:  utf-8  -*-
+    from odoo import models, fields
+    class myconf(models.Model):
+        _name='myconferences.myconf'
+        _description='a model for a conference'
+        confname=fields.Char('ConfName' , Required=True)
+        indexed=fields.Boolean('Indexed ?', Required=True)
+        startdate=fields.Date('Start Date', Required=True)
+        enddate=fields.Date('End Date', Required=True)    
+        fee=fields.Float('Registration Fee', Required=True)
+
+
+ We need now to create the Main Menu on Odoo toolbar which would take to our application. This is done via an XML file. I have create a simple file called : mymenu.xml within the views folder. The content of the XML file is shown below:
+
+     <?xml  version="1.0"?>  
+    <odoo>  
+      <act_window  id="action_myconference"  
+          name="Manage Conferences"  
+          res_model="myconferences.myconf"
+          view_mode="tree,form"  />  
+      <menuitem  id="menu_myconference"  
+          name="Manage Conferences"  
+          action="action_myconference"  />  
+    </odoo>
+
+
+We have to tell odoo to import the Model now by editing the __init__.py file as shown :
+    # -*- coding: utf-8 -*-
+    from . import controllers
+    from . import models
+    from . import conf
+
+if needed, you can restart the odoo server from the Ubuntu shell
+systemctl restart odoo 
+
+Install the Application now !
+
+By default, odoo would create a simple interface for it with a basic form to add records to your database using the described model.
+
+We better improve the view to use a tree instead with more fields on the main screen of the application. We create a new XML file called mainpage.xml within the views folder. The content of the xml file is copied below:
+
+
+    <?xml  version="1.0"?>  
+    <odoo>                 
+      <record  id="view_tree_myconferences"  model="ir.ui.view">  
+        <field  name="name">Conferences Tree</field>  
+        <field  name="model">myconferences.myconf</field>  
+        <field  name="arch"  type="xml">  
+            <tree>  
+                <field  name="confname"/>  
+                <field  name="startdate"/>  
+                                        <field  name="enddate"/>  
+                                        <field  name="fee"/>  
+            </tree>  
+        </field>  
+      </record>                  
+    </odoo>
+
+
+
+Odoo needs to know the existence of the xml file via adding its location to the __manifrst__.py file at the ‘data’ variable as shown below:
+
+        # always loaded
+        'data': [
+            'views/mymenu.xml',
+            'views/mainpage.xml',
+        ],
+
+Upgrade Your Application ! Here is the new screen now for the main interface of our application !
