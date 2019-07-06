@@ -1,0 +1,63 @@
+Hello everyone,Below you will find the easiest installation guide of odoo 11.Let’s start.
+First you run these two command:
+
+sudo apt update
+sudo apt upgrade
+
+Python dependencies:
+
+Then install python3-pip using following command:
+
+sudo apt-get install python3-pip
+
+Then install the python  dependencies for Odoo 11 using pip3:
+
+pip3 install Babel decorator docutils ebaysdk feedparser gevent greenlet html2text Jinja2 lxml Mako MarkupSafe mock num2words ofxparse passlib Pillow psutil psycogreen psycopg2 pydot pyparsing PyPDF2 pyserial python-dateutil python-openid pytz pyusb PyYAML qrcode reportlab requests six suds-jurko vatnumber vobject Werkzeug XlsxWriter xlwt xlrd
+
+Web dependencies:
+
+Then install the Odoo web dependecies.Odoo needs a PostgreSQL server to run properly. The default configuration for the Odoo ‘deb’ package is to use the PostgreSQL server on the same host as your Odoo instance.Execute following command as a root in order to install PostgreSQL server.
+
+apt-get install postgresql -y
+
+Adding Repository:
+
+Odoo S.A. provides a repository that can be used with Debian and Ubuntu distributions. It can be used to install Odoo Community Edition by executing the following commands as root:
+
+wget -O - https://nightly.odoo.com/odoo.key | apt-key add -
+
+echo "deb http://nightly.odoo.com/11.0/nightly/deb/ ./" >> /etc/apt/sources.list.d/odoo.list
+
+apt-get update && apt-get install odoo
+
+Now odoo installed on your system.
+Database Setup:
+
+PostgreSQL, to use a local database. After installation you will need to create a postgres user: by default the only user is postgres, and Odoo forbids connecting as postgres.
+
+sudo su - postgres -c "createuser -s $USER"
+
+This will create the user and now you can run the Odoo on your local hsot on a port 8069.
+
+http://localhost:8069
+
+
+Switching Over to the postgres Account
+Switch over to the postgres account on your server by typing on terminal to check the database and tables:
+sudo -i -u postgres
+
+You can now access a Postgres prompt immediately by typing:
+psql
+
+This will log you into the PostgreSQL prompt, and from here you are free to interact with the database management system right away.
+
+To check the databases in PostgreSQL type this command:
+\l
+
+To connect to database type:
+\c database_name
+
+Exit out of the PostgreSQL prompt by typing:
+\q
+
+This will bring you back to the postgres Linux command prompt.
